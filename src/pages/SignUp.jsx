@@ -1,11 +1,76 @@
-import React from "react";
 import InputField from "../components/InputField";
 import LoginButton from "../components/LoginButton";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "../firebase";
 
 const SignUp = () => {
   // logic
+  const history = useNavigate();
 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // 로딩 상태
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleInputChange = (inputValue, field) => {
+    if (field === "name") {
+      setName(inputValue);
+    } else if (field === "email") {
+      setEmail(inputValue);
+    } else {
+      setPassword(inputValue);
+    }
+  };
+
+  const handleSignUp = async (event) => {
+    event.preventDefault(); // 폼 제출시 새로고침 방지 메소드
+
+    setErrorMessage("");
+
+    // 로딩중이면 사용자가 name, emaill, password값 작성 안하면 실행안함
+    if (isLoading || !name || !email || !password) return;
+    console.log("name", name);
+    console.log("email", email);
+    console.log("password", password);
+
+    setIsLoading(true);
+
+    try {
+      // 비동기 처리 성공시
+
+      // 계정 생성
+      const credential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("🚀 ~credential:", credential);
+
+      // 사용자 프로필 이름 지정
+      await updateProfile(credential.user, {
+        displayName: name,
+      });
+
+      // 홈화면으로 리다이렉트
+      history("/");
+    } catch (error) {
+      // 비동기 처리에서 에러난 경우
+      console.error("code!!", error.code);
+      console.error(error.message);
+      setErrorMessage(
+        error.code === "auth/weak-password"
+          ? "비밀번호 6자리 이상 입력해주세요"
+          : error.message
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
   // view
   return (
     <div className="h-full flex flex-col justify-center">
@@ -17,10 +82,20 @@ const SignUp = () => {
           Churead에서 소통해보세요
         </h3>
         {/* START: 폼 영역 */}
-        <form id="login-form" className="text-center flex flex-col gap-2">
-          <InputField type="text" field="name" />
-          <InputField type="text" field="email" />
-          <InputField type="password" field="password" />
+        <form
+          id="login-form"
+          className="text-center flex flex-col gap-2"
+          onSubmit={handleSignUp}
+        >
+          <InputField type="text" field="name" onChange={handleInputChange} />
+          <InputField type="text" field="email" onChange={handleInputChange} />
+          <InputField
+            type="password"
+            field="password"
+            onChange={handleInputChange}
+          />
+          {/**errorMessage추가 */}
+          {errorMessage && <p className="text-red-600">{errorMessage}</p>}
           <LoginButton category="login" text="Create Account" />
         </form>
         {/* END: 폼 영역 */}
