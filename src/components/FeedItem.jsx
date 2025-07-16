@@ -2,7 +2,15 @@ import React from "react";
 import { RiHeartFill, RiHeartLine, RiPencilFill } from "react-icons/ri";
 import { FaTrash } from "react-icons/fa6";
 
-const FeedItem = ({ data, tags, isAuthor, currentUserId, onEdit, onDelete, onLike }) => {
+const FeedItem = ({
+  data,
+  tags,
+  isAuthor,
+  currentUserId,
+  onEdit,
+  onDelete,
+  onLike,
+}) => {
   // logic
   const { _id, userName, userProfileImage, content, likeCount } = data;
 
@@ -53,8 +61,12 @@ const FeedItem = ({ data, tags, isAuthor, currentUserId, onEdit, onDelete, onLik
           <p className="pt-1 whitespace-break-spaces">{content}</p>
           {/* START: 좋아요 영역 */}
           <div className="flex items-center gap-1">
-            <button type="button" className="text-churead-gray-400" onClick={() => onLike(_id)}>
-              {data.likedUsers.includes(currentUserId) ? <RiHeartFill color="red" /> : <RiHeartLine />}
+            <button
+              type="button"
+              className="text-churead-gray-400"
+              onClick={() => onLike(_id)}
+            >
+              {/* {data.likedUsers.includes(currentUserId) ? <RiHeartFill color="red" /> : <RiHeartLine />} */}
             </button>
             <span>{likeCount}</span>
           </div>
