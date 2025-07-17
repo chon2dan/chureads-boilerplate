@@ -4,12 +4,14 @@ import Nav from "../components/layout/Nav";
 import FeedItem from "../components/FeedItem";
 import { initialFeedList, initialTags } from "../data/response";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
 
 const Home = () => {
   // logic
   const history = useNavigate();
 
   const [feedList, setFeedList] = useState(initialFeedList);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleEdit = (data) => {
     history(`/edit/${data._id}`); // edit페이지로 이동
@@ -26,16 +28,34 @@ const Home = () => {
     console.log("🚀 ~ handleLike ~ selectedId:", selectedId);
   };
 
+  const handlelogout = async () => {
+    if (isLoggedIn) {
+      const ok = window.confirm("로그아웃하시겠습니까?");
+      ok && (await auth.signOut());
+      setIsLoggedIn(false);
+      history("/login");
+    }
+  };
+
   useEffect(() => {
+    //로그인 되지 않은 사용자는 로그인 페이지로 이동
+    if (!auth.currentUser) {
+      history("/login");
+    } else {
+      setIsLoggedIn(true);
+    }
+    //
     // 페이지 진입시 딱 한번 실행
     // TODO: 백엔드에 Get 요청
+    //
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // view
   return (
     <div className="h-full pt-20 pb-[74px] overflow-hidden">
       {/* START: 헤더 영역 */}
-      <Header isLoggedIn={true} />
+      <Header isLoggedIn={true} onClick={handlelogout} />
       {/* END: 헤더 영역 */}
       <main className="h-full overflow-auto">
         {/* TODO */}

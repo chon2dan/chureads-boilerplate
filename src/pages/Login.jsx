@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputField from "../components/InputField";
 import LoginButton from "../components/LoginButton";
 import { Link, useNavigate } from "react-router-dom";
@@ -73,6 +73,13 @@ const Login = () => {
       console.log(err);
     }
   };
+
+  //미션 이미 로그인한 사용자는 로그인페이지 접글 불가, Home으로 리다이렉팅
+  useEffect(() => {
+    if (auth.currentUser) {
+      history("/");
+    }
+  });
 
   // view
   return (
