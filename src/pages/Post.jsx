@@ -7,6 +7,8 @@ const Post = () => {
   // logic
   const history = useNavigate();
   const [churead, setChuread] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const currentUser = auth.currentUser;
 
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -41,6 +43,9 @@ const Post = () => {
     // 2. 제거한 텍스트를 기준으로 빈 스트링인지 체크하기
     // 3. 빈 스트링인 경우 알람창에 "츄레드를 입력해주세요"라고 메시지 뜨기
     // 4. 빈 스트링이 아닌 경우 기존처럼 아이템 추가하기
+    setIsLoading(true);
+    console.log("isLoading :", isLoading);
+    console.log("submit??");
 
     const resultChuread = churead.trim();
     if (!resultChuread) {
@@ -65,6 +70,8 @@ const Post = () => {
       history("/"); // home화면으로 이동
     } catch (error) {
       console.log("게시글 추가 에러", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -82,7 +89,7 @@ const Post = () => {
       </header>
       <main className="h-full pt-[72px] pb-[88px] overflow-hidden">
         <div className="h-full overflow-auto">
-          <form id="post" onSubmit={handlePost}>
+          <form id="post" onSubmit={!isLoading ? handlePost : () => {}}>
             {/* START: 사용자 입력 영역 */}
             <PostInput
               onChange={handleChange}
@@ -102,7 +109,7 @@ const Post = () => {
                 type="submit"
                 className="ml-auto px-5 py-2 bg-white text-churead-black rounded-3xl font-bold"
               >
-                게시
+                {isLoading ? "작성중..." : "게시"}
               </button>
             </div>
             {/* END: 게시 버튼 영역 */}

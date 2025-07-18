@@ -87,7 +87,6 @@ const Home = () => {
       } catch (error) {}
     };
     fetchPosts();
-    console.log(auth.currentUser.uid);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
